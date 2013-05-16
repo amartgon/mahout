@@ -205,13 +205,17 @@ elif [ "x$alg" == "xclassification" ]; then
       echo "Running Standard Training"
       $MAHOUT trainnb -i $TRAIN -o $MODEL --extractLabels --labelIndex $LABEL --overwrite
       echo "Running Test"
-      $MAHOUT testnb -i $TEST -o $TEST_OUT -m $MODEL --labelIndex $LABEL --overwrite
+      $MAHOUT testnb -i $TEST -o $TEST_OUT -m $MODEL --overwrite
+      echo "Printing classifier evaluation"
+      $MAHOUT evalClassifier -i $TEST_OUT --labelIndex $LABEL 
 
     elif [ "x$classAlg" == "xcomplementary"  ]; then
       echo "Running Complementary Training"
       $MAHOUT trainnb -i $TRAIN -o $MODEL --extractLabels --labelIndex $LABEL --overwrite --trainComplementary
       echo "Running Complementary Test"
-      $MAHOUT testnb -i $TEST -o $TEST_OUT -m $MODEL --labelIndex $LABEL --overwrite --testComplementary
+      $MAHOUT testnb -i $TEST -o $TEST_OUT -m $MODEL --overwrite --testComplementary
+      echo "Printing classifier evaluation"
+      $MAHOUT evalClassifier -i $TEST_OUT --labelIndex $LABEL 
     fi
   elif [ "x$classAlg" == "xsgd"  ]; then
     CLASS="$OUT/classification/sgd"

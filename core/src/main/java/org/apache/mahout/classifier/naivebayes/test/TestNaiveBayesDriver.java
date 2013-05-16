@@ -74,7 +74,6 @@ public class TestNaiveBayesDriver extends AbstractJob {
     addOption("model", "m", "The path to the model built during training", true);
     addOption(buildOption("testComplementary", "c", "test complementary?", false, false, String.valueOf(false)));
     addOption(buildOption("runSequential", "seq", "run sequential?", false, false, String.valueOf(false)));
-    addOption("labelIndex", "l", "The path to the location of the label index", true);
     Map<String, List<String>> parsedArgs = parseArguments(args);
     if (parsedArgs == null) {
       return -1;
@@ -111,20 +110,6 @@ public class TestNaiveBayesDriver extends AbstractJob {
         return -1;
       }
     }
-    
-    //load the labels
-    Map<Integer, String> labelMap = BayesUtils.readLabelIndex(getConf(), new Path(getOption("labelIndex")));
-
-    //loop over the results and create the confusion matrix
-    SequenceFileDirIterable<Text, VectorWritable> dirIterable =
-        new SequenceFileDirIterable<Text, VectorWritable>(getOutputPath(),
-                                                          PathType.LIST,
-                                                          PathFilters.partFilter(),
-                                                          getConf());
-    ResultAnalyzer analyzer = new ResultAnalyzer(labelMap.values(), "DEFAULT");
-    analyzeResults(labelMap, dirIterable, analyzer);
-
-    log.info("{} Results: {}", complementary ? "Complementary" : "Standard NB", analyzer);
     return 0;
   }
 
@@ -139,24 +124,5 @@ public class TestNaiveBayesDriver extends AbstractJob {
     boolean complementary = parsedArgs.containsKey("testComplementary");
     testJob.getConfiguration().set(COMPLEMENTARY, String.valueOf(complementary));
     return testJob.waitForCompletion(true);
-  }
-
-  private static void analyzeResults(Map<Integer, String> labelMap,
-                                     SequenceFileDirIterable<Text, VectorWritable> dirIterable,
-                                     ResultAnalyzer analyzer) {
-    for (Pair<Text, VectorWritable> pair : dirIterable) {
-      int bestIdx = Integer.MIN_VALUE;
-      double bestScore = Long.MIN_VALUE;
-      for (Vector.Element element : pair.getSecond().get()) {
-        if (element.get() > bestScore) {
-          bestScore = element.get();
-          bestIdx = element.index();
-        }
-      }
-      if (bestIdx != Integer.MIN_VALUE) {
-        ClassifierResult classifierResult = new ClassifierResult(labelMap.get(bestIdx), bestScore);
-        analyzer.addInstance(pair.getFirst().toString(), classifierResult);
-      }
-    }
   }
 }

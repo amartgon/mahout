@@ -111,16 +111,26 @@ if [ "x$alg" == "xnaivebayes"  -o  "x$alg" == "xcnaivebayes" ]; then
   ./bin/mahout testnb \
     -i ${WORK_DIR}/20news-train-vectors\
     -m ${WORK_DIR}/model \
-    -l ${WORK_DIR}/labelindex \
     -ow -o ${WORK_DIR}/20news-testing $c
+
+  echo "Printing classifier evaluation (training set)"
+
+  ./bin/mahout evalClassifier \
+    -i ${WORK_DIR}/20news-testing \
+    -l ${WORK_DIR}/labelindex $c
 
   echo "Testing on holdout set"
 
   ./bin/mahout testnb \
     -i ${WORK_DIR}/20news-test-vectors\
     -m ${WORK_DIR}/model \
-    -l ${WORK_DIR}/labelindex \
     -ow -o ${WORK_DIR}/20news-testing $c
+
+  echo "Printing classifier evaluation (holdout set)"
+
+  ./bin/mahout evalClassifier \
+    -i ${WORK_DIR}/20news-testing \
+    -l ${WORK_DIR}/labelindex $c
 
 elif [ "x$alg" == "xsgd" ]; then
   if [ ! -e "/tmp/news-group.model" ]; then

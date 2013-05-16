@@ -53,7 +53,7 @@ org.apache.mahout.classifier.sequencelearning.hmm.ViterbiEvaluator = viterbi : V
 org.apache.mahout.classifier.sequencelearning.hmm.RandomSequenceGenerator = hmmpredict : Generate random sequence of observations by given HMM
 #Classifier Utils
 org.apache.mahout.classifier.ConfusionMatrixDumper = cmdump : Dump confusion matrix in HTML or text formats
-
+org.apache.mahout.classifier.evaluation.ClassifierEvaluationJob = evalClassifier : Generate and print accuracy and confusion matrix from classification results
 #Recommenders
 org.apache.mahout.cf.taste.hadoop.als.DatasetSplitter = splitDataset : split a rating dataset into training and probe parts
 org.apache.mahout.cf.taste.hadoop.als.FactorizationEvaluator = evaluateFactorization : compute RMSE and MAE of a rating matrix factorization against probes
